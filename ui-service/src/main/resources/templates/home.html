@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Guitar Shop</title>
+</head>
+<body>
+<h1>Welcome to Guitar Shop</h1>
+<table border="1">
+    <tr>
+        <th>Brand</th>
+        <th>Model</th>
+        <th>Price</th>
+        <th>Description</th>
+    </tr>
+    <tr th:each="guitar : ${guitars}">
+        <td th:text="${guitar.brand}">Fender</td>
+        <td th:text="${guitar.model}">Stratocaster</td>
+        <td th:text="${guitar.price}">1000</td>
+        <td th:text="${guitar.description}">Classic guitar</td>
+    </tr>
+</table>
+</body>
+</html>
