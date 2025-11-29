@@ -1,66 +1,27 @@
-pipeline {
-  agent any
-
-  environment {
-    SONAR_TOKEN = credentials('SONAR_TOKEN')   // from Jenkins credentials
-  }
-
-  tools {
-    maven 'MAVEN_HOME'
-    jdk 'JDK21'
-  }
-
   stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
+    stage('Checkout') { ... }
 
-    stage('Build product-service') {
-      steps {
-        dir('product-service') {
-          sh 'mvn -B clean package -DskipTests'
-        }
-      }
-    }
+    stage('Build product-service') { ... }
 
-    stage('Build ui-service') {
-      steps {
-        dir('ui-service') {
-          sh 'mvn -B clean package -DskipTests'
-        }
-      }
-    }
+    stage('Build ui-service') { ... }
 
-    stage('SonarQube analysis') {
-      steps {
-        dir('product-service') {
-          withSonarQubeEnv('MySonarServer') {
-            sh "mvn -B sonar:sonar -Dsonar.login=${SONAR_TOKEN}"
-          }
-        }
-      }
-    }
+    stage('SonarQube analysis') { ... }
 
-    stage('Quality Gate') {
-      steps {
-        timeout(time: 2, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
-        }
-      }
-    }
+    stage('Quality Gate') { ... }
 
     stage('Archive artifacts') {
       steps {
         archiveArtifacts artifacts: 'product-service/target/*.jar, ui-service/target/*.jar', fingerprint: true
       }
     }
-  }
 
-  post {
-    always {
-      echo 'Pipeline finished'
+    stage('Deploy (simple)') {
+      steps {
+        sh '''
+          mkdir -p /var/jenkins_home/deploy
+          cp product-service/target/*.jar /var/jenkins_home/deploy/product-service.jar
+          cp ui-service/target/*.jar /var/jenkins_home/deploy/ui-service.jar
+        '''
+      }
     }
   }
-}
